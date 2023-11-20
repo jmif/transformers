@@ -37,7 +37,7 @@ from huggingface_hub import (
     create_repo,
     get_hf_file_metadata,
     hf_hub_download,
-    hf_hub_url,
+    hf_hub_url, repo_exists,
 )
 from huggingface_hub.file_download import REGEX_COMMIT_HASH, http_get
 from huggingface_hub.utils import (
@@ -713,8 +713,11 @@ class PushToHubMixin:
                     repo_id = repo_id.split("/")[-1]
                 repo_id = f"{organization}/{repo_id}"
 
-        url = create_repo(repo_id=repo_id, token=token, private=private, exist_ok=True)
-        return url.repo_id
+        if not repo_exists(repo_id, token=token):
+            url = create_repo(repo_id=repo_id, token=token, private=private, exist_ok=True)
+            return url.reo_id
+        else:
+            return repo_id
 
     def _get_files_timestamps(self, working_dir: Union[str, os.PathLike]):
         """
